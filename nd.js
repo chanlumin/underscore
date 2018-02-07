@@ -224,11 +224,11 @@
     };
   
     // 闭包
-    var property = function(key) {
-      return function(obj) {
-        return obj == null ? void 0 : obj[key];
-      };
+  var property = function(key) {
+    return function(obj) {
+      return obj == null ? void 0 : obj[key];
     };
+  };
   
     // Helper for collection methods to determine whether a collection
     // should be iterated as an array or as an object
@@ -238,8 +238,7 @@
     // Math.pow(2, 53) - 1 是 JavaScript 中能精确表示的最大数字
     var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
   
-    // getLength 函数
-    // 该函数传入一个参数，返回参数的 length 属性值
+      // 该函数传入一个参数，返回参数的 length 属性值
     // 用来获取 array 以及 arrayLike 元素的 length 属性值
     var getLength = property('length');
   
@@ -1135,8 +1134,8 @@
     };
   
     // Complement of _.zip. Unzip accepts an array of arrays and groups
-    // each array's elements on shared indices
-    // The opposite of zip. Given an array of arrays,
+    // each arrayFx's elements on shared indices
+    // The opposDite of zip. Given an array of arrays,
     // returns a series of new arrays,
     // the first of which contains all of the first elements in the input arrays,
     // the second of which contains all of the second elements, and so on.
