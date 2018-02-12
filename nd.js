@@ -272,9 +272,9 @@
     // 即 iteratee 中出现的（如果有）所有 this 都指向 context
     // notice: 不要传入一个带有 key 类型为 number 的对象！
     // notice: _.each 方法不能用 return 跳出循环（同样，Array.prototype.forEach 也不行）
-    _.each = _.forEach = function(obj, iteratee, context) {
+    _.each = _.forEach = function(obj, iteratee, context) {   // .each(o
       // 根据 context 确定不同的迭代函数
-      iteratee = optimizeCb(iteratee, context);
+      iteratee = optimizeCb(iteratee, context);   //  iteratee.call(context,value,key,obj)=> iteratee(value,key,obj)
   
       var i, length;
   
@@ -283,7 +283,7 @@
       if (isArrayLike(obj)) {
         // 遍历
         for (i = 0, length = obj.length; i < length; i++) {
-          iteratee(obj[i], i, obj);
+          iteratee(obj[i], i, obj); // 直接指明了三个参数Ø
         }
       } else { // 如果 obj 是对象
         // 获取对象的所有 key 值
@@ -339,7 +339,7 @@
       function iterator(obj, iteratee, memo, keys, index, length) {
         for (; index >= 0 && index < length; index += dir) {
           var currentKey = keys ? keys[index] : index;
-          // 迭代，返回值供下次迭代调用
+          // 迭代，返回值供下次迭代调用 memo的累加是通过参数传递的
           memo = iteratee(memo, obj[currentKey], currentKey, obj);
         }
         // 每次迭代返回值，供下次迭代调用

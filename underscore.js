@@ -362,7 +362,199 @@
     return _.isArray(obj) ? obj.slice() : _.extend({}, obj)
   }
 
+  // 回调函数
+  var optimizeCb = function (func, context, argCount) {
+    if(context == void 0) return func
 
+    switch (argCount == null ? 3 : argCount) {
+      case 1 : return function(value) {
+        return func.call(context, value)
+      }
+      case 2 : return function (value, other) {
+        return func.call(context, value, other)
+      }
+      case 3 : return function (value, index, collection) {
+        return func.call(context, value, index, collection)
+      }
+      case 4 : return function(accumulator, value, index, collection) {
+        return func.call(context, accumulator, value, index, collection)
+      }
+    }
+
+    // 过多参数的话直接利用arguments 来绑定context
+    return function() {
+      func.apply(context, arguments)
+    }
+  }
+
+  /**
+   *  进一步优化回调函数
+   * @param value
+   * @param context
+   * @param argCount
+   */
+  var cb = function (value, context, argCount) {
+    // 1 如果value 为空 返回value
+    if(value == null) return _.identity // cb(value) {return value}
+    if(_.isFunction(value)) return optimizeCb(value, context, argCount)
+    if(_.isObject(value)) return _.matcher(value)
+    return property(value)
+  }
+  _.cb = function (value, context, argCount) {
+    // 1 如果value 为空 返回value
+    if (value == null) return _.identity // cb(value) {return value}
+    if (_.isFunction(value)) return optimizeCb(value, context, argCount)
+    if (_.isObject(value)) return _.matcher(value)
+    return property(value)
+  }
+  _.iteratee = function (value, context, argCount) {
+    return _.cb(value, context, argCount)
+  }
+
+
+  /**
+   * attr传入的 对象
+   * @type {matches}
+   */
+  _.matcher = _.matches = function (attrs) {
+    // 复制 attrs自己的属性
+    attrs = _.extendOwn({}, attrs)
+    // 2 obj是否含有某attrs 属性值
+    return function (obj) {
+      return _.isMatch(obj, attrs)
+    }
+
+  }
+
+  // 函数调用
+  /**
+   * obj 对象或者数组
+   * iteratee 回调函数
+   * context 想要绑定的上下文
+   * @type {forEach}
+   */
+  _.each = _.forEach = function (obj, iteratee,  context) {
+    // 1 如果回调函数是空的话 返回自身
+    // 否则的话返回的是固定的三个参数 (argCount=3的时候)
+    iteratee = optimizeCb(iteratee, context) // 默认argCount是3=> iteratee(value, index, collection) || iteratee  => 取决于context
+    if(_.isArrayLike(obj)) {
+      var length, index
+      for(index = 0,length = obj.length; index < length; index++) {
+        iteratee(obj[index], index, obj) // 执行回调函数
+        console.log('arr')
+      }
+    } else if(_.isObject(obj)) {
+      var keys = _.keys(obj)
+      for(index = 0,length = keys.length; index < length; index++) {
+        iteratee(obj[keys[index]],keys[index],obj)
+        console.log('obj')
+      }
+    }
+
+    // 此处就是为了上下文的调用
+    return obj
+  }
+
+  // 返回获得属性的闭包
+  var property = function (key) {
+    return function (obj) {
+      return obj == null ?  void 0 :  obj[key]
+    }
+  }
+
+
+  /**
+   * 遍历对象或者数组 执行回调函数 返回执行后的结果
+   * obj 对象或者数组
+   * iteratee 回调函数
+   * context 上下文环境 传入函数自动为你绑定上下文
+   * @type {collect}
+   */
+  _.map = _.collect = function (obj, iteratee, context) {
+    iteratee = cb(iteratee, context) // cb只需要传入回调函数和context
+
+    // 一定是数组的键
+    var keys = !_.isArrayLike(obj) && _.keys(obj)
+    var length = (keys || obj).length // 数组或者obj
+    var results = Array(length)
+
+    for(index = 0; index < length; index++) {
+      // 直接判断keys的存在与否
+      // key = !_.isArrayLike(obj) ? keys[index] : index
+      var currentKey = keys ? keys[index] : index
+      console.log(currentKey)
+      // 因为是数组所以要用index 而不是currentKey currentKeys可能是对象的key
+      results[index] = iteratee(obj[currentKey], currentKey, context)
+    }
+
+    return results
+  }
+
+  /**
+   * base累加操作
+   * @param dir 向左累加还是向右累加
+   */
+  function createReduce(dir) {
+
+
+
+    /**
+     * 迭代的核心
+     * @param obj 传递进去的对象
+     * @param memo accumulator 累加器
+     * @param keys 对象或者数组的键
+     * @param length 键的长度
+     * @param index iterator的索引
+     */
+    function iterator(obj, iteratee, memo, keys, length, index) {
+      // index > 0 && index < length index 一定是在这个区间范围的
+      for(; index >=0 && index < length; index+=dir) {
+        var key = keys ? keys[index] : index // keys 可能是对象
+
+        memo = iteratee(memo, obj[key], key, obj)
+        console.log(key, memo)
+
+      }
+
+      console.log(memo)
+      return memo
+    }
+
+
+    /**
+     * obj  传递进去的参数
+     * iteratee 回调函数
+     * momo 累加变量 accumulator
+     * context 上下文执行变量
+     */
+    return function (obj, iteratee, memo, context) {
+
+      // 1 初始化工作
+      iteratee = iteratee && optimizeCb(iteratee, context, 4) // 固定四个参数 => iteratee(accumulator, obj[key],key, obj]
+      if(iteratee == null) {
+        return obj
+      }
+
+      var keys = !_.isArrayLike(obj) && _.keys(obj), // 不是类数组就获取兑现固定的keys
+         // length = (keys ?  keys : obj).length, //  或者 keys ? keys.length : obj.length
+          length = (keys || obj).length, //  或者 keys ? keys.length : obj.length
+          index = dir > 0 ? 0 : length - 1
+      // 2 memo 是否有传入
+      if(arguments.length < 3) {
+        memo = obj[keys ? keys[index] : index] // 因为有可能是对象 所以要判断 而不是直接使用index
+        index += dir // 第一次累加 index 向左或者向右进位移一个位置
+      }
+
+      // 返回一个iterator iterator最终返回一个memo值(累加的值)
+      return iterator(obj, iteratee, memo, keys, length, index)
+
+    }
+  }
+
+
+  _.reduce = _.foldl = _.inject = createReduce(1)
+
+  _.reduceRight = _.foldr = createReduce(-1)
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
