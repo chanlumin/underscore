@@ -23,6 +23,7 @@
   nativeBind = FuncProto.bind,
   nativeCreate = Object.create;
 
+
   //  用来创建对象
   var Ctor = function () {}
 
@@ -462,6 +463,8 @@
     }
   }
 
+  var getLength = property('length')
+
 
   /**
    * 遍历对象或者数组 执行回调函数 返回执行后的结果
@@ -555,6 +558,39 @@
   _.reduce = _.foldl = _.inject = createReduce(1)
 
   _.reduceRight = _.foldr = createReduce(-1)
+
+
+  /**
+   * dir 为在+1 或者 -1 寻找可以从左边找 或者从右边找出 他的索引
+   * @param dir
+   */
+  function createPredicateIndexFinder(dir) {
+    /**
+     * array数组
+     * predicate 回调函数
+     * context 执行环境上下文
+     */
+    return function (array, predicate, context) {
+      // 1 初始化参数
+      predicate = optimizeCb(predicate, context) // 默认三个 参数=> predicate(value, index, collection)
+      var length = getLength(array) // array.length 有可能没法获取
+      var index = dir > 0 ? 0 : length - 1
+
+      // 遍历 返回 index下标
+      for(; index >= 0 && index < length; index+= dir) {
+        if(predicate(array[index], index, array)) {
+          return index
+        }
+      }
+      //  如果没有找到的话 就直接返回-1
+      return -1
+    }
+
+  }
+
+  _.findIndex = createPredicateIndexFinder(1)
+
+  _.findLastIndex = createPredicateIndexFinder(-1)
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
