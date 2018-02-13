@@ -572,12 +572,17 @@
      */
     return function (array, predicate, context) {
       // 1 初始化参数
-      predicate = optimizeCb(predicate, context) // 默认三个 参数=> predicate(value, index, collection)
+      // 如果predicate这个参数是对象的话   predicate(obj) 最后返回的是这个参数 predicate这个对象已经作为第二个参数传递进去了
+      predicate = cb(predicate, context) // 默认三个 参数=> predicate(value, index, collection)
+
       var length = getLength(array) // array.length 有可能没法获取
       var index = dir > 0 ? 0 : length - 1
 
       // 遍历 返回 index下标
       for(; index >= 0 && index < length; index+= dir) {
+        /**
+         *  predicate传入一个obj => array[index]
+         */
         if(predicate(array[index], index, array)) {
           return index
         }
