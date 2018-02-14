@@ -597,6 +597,43 @@
 
   _.findLastIndex = createPredicateIndexFinder(-1)
 
+  /**
+   * 找obj中最大的数
+   * @param obj
+   * @param iteratee
+   * @param context
+   */
+  _.max = function (obj, iteratee, context) {
+    var result = -Infinity, computed = -Infinity, lastComputed = -Infinity, value = -Infinity
+
+    // 1. 分两种情况 当没有回调函数的时候 遍历产找最大值
+    if(iteratee == null && obj != null) {
+      // 1 判断obj是数组还是对象
+      obj = _.isArrayLike(obj) ? obj : _.values(obj) // _.values获取对象的值返回一个数组
+      for(var i = 0,length = obj.length; i < length; i++) {
+        value = obj[i]
+        if(result < value) {
+          result = value
+        }
+      }
+    } else {
+      // 2. 有回调函数的话
+      // 优化回调函数 => iteratee(value, index,obj) 固定三个参数
+      iteratee = cb(iteratee, context)
+
+      // function(stooge){ return stooge.age;}
+      _.each(obj, function (value, index, obj) {
+        computed = iteratee(value, index, obj)
+        if(lastComputed < computed || computed == -Infinity && result == -Infinity) {
+          // 备注 result 应该等于value 而不是经过计算的value
+          result = value
+          lastComputed = computed
+        }
+      })
+    }
+    return result
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore

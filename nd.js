@@ -1223,7 +1223,7 @@
       // 注意 cb 方法
       // iteratee 为空 || 为 String 类型（key 值）时会返回不同方法
       iteratee = cb(iteratee, context, 1);
-  
+
       // 经过迭代函数计算的值
       // 可打印 iteratee 出来看看
       var value = iteratee(obj);
