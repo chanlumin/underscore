@@ -652,7 +652,7 @@
    * @param n
    * @param guard
    */
-  _.first = function (array, n, guard) {
+  _.first = _.head = _.take = function (array, n, guard) {
     // 1 初始化
     if(array == null) {
       return void 0
@@ -664,6 +664,35 @@
 
     // 3 截取 0到 array.length - n 就是返回0到n到这个长度
     return _.initial(array, array.length - n)
+  }
+
+  /**
+   * 删除前面n 个元素返回后面 array.length - n
+   * @param array
+   * @param n
+   * @param guard
+   * @returns {*}
+   */
+  _.rest = function (array, n, guard) {
+    return slice.call(array, n == null || guard ? 1 : n)
+  }
+
+  /**
+   *  返回最后一个元素 或者返回最后n个元素
+   * @param array
+   * @param n
+   * @param guard
+   */
+  _.last = function (array, n, guard) {
+    if(array == null) {
+      return void 0
+    }
+
+    if(n == null || guard) {
+      return array[array.length - 1]
+    }
+    // 去除 array.length - n 个元素 返回后面n个元素
+    return _.rest(array,Math.max(0, array.length - n))
   }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
