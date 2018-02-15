@@ -695,6 +695,25 @@
     return _.rest(array,Math.max(0, array.length - n))
   }
 
+  /**
+   * 过滤不满足predicate条件的元素
+   * 发挥一个数组的值
+   * 或者返回对象的的value值
+   * @type {select}
+   */
+  _.filter = _.select = function (obj, predicate, context) {
+    // 优化回调函数
+    predicate = cb(predicate, context)
+    var results = []
+    _.each(obj, function (value, index, obj) {
+      if(predicate(value, index, obj)) {
+        results.push(value)
+      }
+    })
+
+    return results
+  }
+  
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
