@@ -12,7 +12,7 @@
   var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype
 
   var
-  lice = ArrayProto.slice,
+  slice = ArrayProto.slice,
   push = ArrayProto.push,
   toString = ArrayProto.toString,
   hasOwnProperty = ObjProto.hasOwnProperty
@@ -22,6 +22,7 @@
   nativeKeys = Object.keys,
   nativeBind = FuncProto.bind,
   nativeCreate = Object.create;
+
 
 
   //  用来创建对象
@@ -632,6 +633,37 @@
       })
     }
     return result
+  }
+
+  /**
+   * 需要注意的是 n == null || guard  ?  1 : n 执行顺序其实是 (n == null || guard) ? 1 : n
+   * 而且是要删除的所以要用减的
+   * @param array
+   * @param n 去掉数组后面n个数字
+   * @param guard 哨兵变量
+   */
+  _.initial = function (array, n, guard) {
+    return slice.call(array,0, array.length - Math.max(n==null || guard ? 1 : n))
+  }
+
+  /**
+   * 返回第一个元素 如果传入n的话 那么就返回第0到n个元素 也就是剔除array.length - n 个元素
+   * @param array
+   * @param n
+   * @param guard
+   */
+  _.first = function (array, n, guard) {
+    // 1 初始化
+    if(array == null) {
+      return void 0
+    }
+    // 2 n有传入就为n 否则就是1
+    // if(n == null || guard) return array[0]
+    n = (n == null || guard ? 1 : n)
+
+
+    // 3 截取 0到 array.length - n 就是返回0到n到这个长度
+    return _.initial(array, array.length - n)
   }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
