@@ -713,7 +713,15 @@
 
     return results
   }
-  
+
+  /**
+   * 去除数组中所有的假值 比如 false null undefined 0 "" NaN 都是假值
+   * @param array
+   */
+  _.compact = function (array) {
+    //  _.identity => function(value) {return value} =》  直接对value进行filter
+    return _.filter(array, _.identity)
+  }
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
