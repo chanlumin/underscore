@@ -722,6 +722,62 @@
     //  _.identity => function(value) {return value} =》  直接对value进行filter
     return _.filter(array, _.identity)
   }
+
+  /**
+   * 展开数组  比如 [1,[1,2],[1]] => [1,1,2,1]
+   * @param array
+   * @param shallow
+   * @param strict
+   * @param output
+   */
+  var flatten = function (array, shallow, strict, output) {
+    output = output || []
+    var idx = output.length // 输出结果的开始下标
+
+    for(var i = 0, length = getLength(array); i < length; i++) {
+      // 后面会用到很多array[i]所以先取出来
+      value = array[i]
+      if(_.isArrayLike(value) && (_.isArray(value)) || _.isArguments(value)) {
+        // 如果数组 判断是深展开还是浅展开
+        if(shallow) {
+          var j = 0, len = value.length
+          while (j < len) output[idx++] = value[j++]
+        } else {
+          // 递归的时候参数传递错误 所以造成栈溢出
+          flatten(value, shallow, strict, output)
+        }
+      } else if(!strict) {
+        output[idx++] = value
+      }
+    }
+
+    return output
+  }
+
+  _.flatten = function (array, shallow) {
+    return flatten(array,shallow, false) // 非严格的
+  }
+  /*
+   * 将list转为object对象
+   * @param list
+   * @param value
+   */
+  _.object = function (list, value) {
+    var result = {},length = getLength(list)
+    for(var i = 0; i < length; i++) {
+      // 1. 如果没有传入value值 那么视list 为k-v对
+      // _.object(['moe', 'larry', 'curly'], [30, 40, 50]);
+      if(!value) {
+        result[list[i][0]]  = list[i][1]
+      } else {
+
+      // 2 _.object([['moe', 30], ['larry', 40], ['curly', 50]]);
+        result[list[i]] = value[i]
+      }
+    }
+    return result
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
