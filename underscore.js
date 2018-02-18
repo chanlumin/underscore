@@ -777,6 +777,42 @@
     }
     return result
   }
+  _.range = function (start, stop, step) {
+    // 1 如果没有传入stop 参数
+    if(stop == null) {
+      stop = start || 0
+      start = 0
+    }
+    // 2 如果没有step 默认是1 或者 -1
+    if(!step) {
+      step = start < stop ?  1 : -1
+    }
+
+    // 3 计算range长度
+    var length = Math.max(Math.ceil((stop - start) / step), 0)
+    var range = Array(length)
+
+    // 4 遍历idx和start
+    for(var idx = 0; idx < length; idx++, start+=step) {
+      range[idx] = start
+    }
+
+    return range
+  }
+
+  // 将array划分为若干份,每份count个元素 再合并到一个数组
+  _.chunk = function (array, count) {
+    if(count == null || count < 1) return []
+
+    var result = [],
+    i = 0,
+    length = array.length
+    while (i < length) {
+      result.push(slice.call(array, i, i+=count))
+    }
+
+    return result
+  }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
