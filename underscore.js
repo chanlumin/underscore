@@ -464,6 +464,17 @@
     }
   }
 
+  // 提供一个对象返回一个函数 只需要传入属性的值就可以获取对象的值
+  var propertyOf = function (obj) {
+    return obj == null ? function () {} : function (key) {
+      return obj[key]
+    }
+  }
+  _.propertyOf = function (obj) {
+    return obj == null ? function () {} : function (key) {
+      return obj[key]
+    }
+  }
   var getLength = property('length')
 
 
@@ -813,6 +824,69 @@
 
     return result
   }
+  
+  // 
+  function createIndexFinder(dir, predicateFind, sortedIndex ) {
+    return function (array, item, index) {
+      var length = getLength(array), i = 0
+      // 存在的话  typofe xxx == 'number
+      if(typeof index == 'number') {
+        // 1 dir 大于0校正 i
+        if(dir > 0) {
+          // 此处的i其实就是index 只是校正正负数
+          i = index > 0 ? index : Math.max(i, index + length)
+        } else {
+        //2 dir < 0 从右向左找 校正length   [0,1,2,3,4] => 如果index = -1 那么开始的位置是4
+        //  [0,1,2,3,4] 如果index = 0 的话,从0这个位置往左找, 那么length 是等于1的
+          length = index  > 0 ?  Math.min(index + 1, length) :  index + length + 1 // -1 + 4 + 1=>4
+        }
+        // 如果是有序的话就调用二分查找排序 优化
+      } else if(sortedIndex && index && length)  {
+        index = sortedIndex(array, item) // sortedIndex  ?
+        return array[index] === item ? index : -1
+      }
+
+      // 3 如果待查找的不是数字 是NaN
+      if(item !== item) {
+        index = predicateFind(slice.call(array, i, length), _.isNaN) // ?
+        return index >= 0 ? index + i : -1
+      }
+
+      // 4 否则直接通过 === 进行查找 length - 1 又是多余的吧 i已经校正过了 根据dirlength也校正过了
+      for(index = dir > 0 ? i : length -1; index >= 0  && index <length; index+=dir) {
+        if(array[index] === item) return index
+      }
+      return -1
+    }
+  }
+
+
+  /**
+   * 就
+   * @param array
+   * @param obj
+   * @param iteratee
+   * @param context
+   */
+  _.sortedIndex = function (array, obj, iteratee, context) {
+    iteratee = cb(iteratee,context)
+    //
+    var value = iteratee(obj)
+
+    var low = 0, high = getLength(array)
+    while (low < high) {
+      var mid = Math.floor((low + high) / 2)
+      // 如果iteratee是空的话 那么经过cb这个函数进行优化的话 可以返回自身
+      if(value < iteratee(array[mid])) {
+        high = mid
+      } else {
+        low = mid + 1
+      }
+    }
+    return low
+  }
+
+  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex)
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {

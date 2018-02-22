@@ -1273,7 +1273,7 @@
           // 用 _.sortIndex 找到有序数组中 item 正好插入的位置
           idx = sortedIndex(array, item);
   
-          // 如果正好插入的位置的值和 item 刚好相等
+          // item 刚好相等
           // 说明该位置就是 item 第一次出现的位置
           // 返回下标
           // 否则即是没找到，返回 -1
