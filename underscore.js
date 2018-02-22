@@ -428,6 +428,41 @@
 
   }
 
+  /**
+   *  返回一个对象的副本 挑选出他选择的属性值
+   * @param obj
+   * @param iteratee
+   * @param context
+   */
+  _.pick = function (object, oiteratee, context) {
+    var result = {}, obj = object, keys,iteratee
+
+    if(obj == null) return result
+
+    // 1 如果有第二个函数的话 那么keys从object中去获取 因为第二个参数不是传递keys
+    if(_.isFunction(oiteratee)) {
+      keys = _.allKeys(obj)
+      iteratee = cb(oiteratee, context)
+    } else {
+      // 2 如果第二个参数是数组的话 从位置1开始展开这些数组
+      keys = _.flatten(arguments, false,false, 1) //
+      iteratee = function (value, key, obj) { return key in obj }
+      // >
+      obj = Object(obj)
+    }
+
+    for(var i = 0,length = keys.length; i < length; i++) {
+      // 3 对每一个keys进行判断 如果符合iteratee这个函数的话就result这个对象添加一个key value值
+      var key = keys[i]
+      var value = obj[key]
+
+      if(iteratee(value, key, obj)) {
+        result[key] = value
+      }
+    }
+    return result
+  }
+
   // 函数调用
   /**
    * obj 对象或者数组
