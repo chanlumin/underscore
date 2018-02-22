@@ -434,6 +434,16 @@
    * @param iteratee
    * @param context
    */
+   /*
+  _.pick({name: 'moe', age: 50, userid: 'moe1'}, 'name', 'age');
+  => {name: 'moe', age: 50}
+  _.pick({name: 'moe', age: 50, userid: 'moe1'}, ['name', 'age']);
+  => {name: 'moe', age: 50}
+  _.pick({name: 'moe', age: 50, userid: 'moe1'}, function(value, key, object) {
+    return _.isNumber(value);
+  });
+  => {age: 50}
+  */
   _.pick = function (object, oiteratee, context) {
     var result = {}, obj = object, keys,iteratee
 
@@ -461,6 +471,17 @@
       }
     }
     return result
+  }
+
+  /**
+   * 返回一个方法的对立方法
+   * @param predicate
+   */
+  _.negate = function (predicate) {
+    return function () {
+      // 1 不用传递参数 参数传递靠arguments
+      return !predicate.apply(this, arguments)
+    }
   }
 
   // 函数调用
@@ -767,6 +788,16 @@
   _.compact = function (array) {
     //  _.identity => function(value) {return value} =》  直接对value进行filter
     return _.filter(array, _.identity)
+  }
+
+  /**
+   * 过滤出不满足条件的元素
+   * @param obj
+   * @param predicate
+   * @param context
+   */
+  _.reject = function (obj, predicate, context) {
+    return _.filter(obj, _.negate(cb(predicate)), context)
   }
 
   /**
