@@ -899,12 +899,12 @@
       if(typeof index == 'number') {
         // 1 dir 大于0校正 i
         if(dir > 0) {
-          // 此处的i其实就是index 只是校正正负数
-          i = index > 0 ? index : Math.max(i, index + length)
+          // 此处的i其实就是index 只是校正正负数 此处应该是>=0
+          i = index >= 0 ? index : Math.max(i, index + length)
         } else {
         //2 dir < 0 从右向左找 校正length   [0,1,2,3,4] => 如果index = -1 那么开始的位置是4
         //  [0,1,2,3,4] 如果index = 0 的话,从0这个位置往左找, 那么length 是等于1的
-          length = index  > 0 ?  Math.min(index + 1, length) :  index + length + 1 // -1 + 4 + 1=>4
+          length = index  >= 0 ?  Math.min(index + 1, length) :  index + length + 1 // -1 + 4 + 1=>4
         }
         // 如果是有序的话就调用二分查找排序 优化
       } else if(sortedIndex && index && length)  {
@@ -953,6 +953,24 @@
   }
 
   _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex)
+
+  _.contains = _.include = _.includes = function (obj, item, fromIndex) {
+    // 1 如果不是类数组的话 获取对象的values返回一个数组
+    if(!_.isArrayLike(obj)) {
+      obj = _.values(obj)
+      console.log('hello')
+    }
+
+    // 2 如果没有传递fromIndex的话 默认fromIndex 为-
+    if(typeof fromIndex != 'number' || guard) {
+      fromIndex = 0
+    }
+
+    // 3 调用_.indexOf
+    return _.indexOf(obj, item, fromIndex) >= 0
+
+
+  }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
