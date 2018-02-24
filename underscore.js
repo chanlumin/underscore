@@ -726,6 +726,18 @@
 
     return result
   }
+  /**
+   * 萃取数组对象中的某属性值
+   * @param obj
+   * @param key
+   *
+   * var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+     _.pluck(stooges, 'name');
+     => ["moe", "larry", "curly"]
+   */
+  _.pluck = function (obj, key) {
+    return _.map(obj, property(key))
+  }
 
   /**
    * 需要注意的是 n == null || guard  ?  1 : n 执行顺序其实是 (n == null || guard) ? 1 : n
