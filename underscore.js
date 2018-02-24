@@ -739,6 +739,25 @@
     return _.map(obj, property(key))
   }
 
+  _.unzip = function (array) {
+    // 1 传入的是嵌套数组 所以获取嵌套数组中数组长度最长的数组
+    // max 里面的iteratee优化成proterty('length') 只要传入array就能获取array的length
+    var length = array && _.max(array, 'length').length //  max 返回的是一个value 也就是Array
+    var result = Array(length)
+
+    // 2 遍历只需要进行萃取 提取某数组获取对象某属性的值
+    for(var index = 0; index < length; index++) {
+      result[index] = _.pluck(array, index)
+    }
+    return result
+  }
+
+  _.zip = function () {
+    // 1 其实调用的是unzip 也就是说zip和unzip的代码本质上一样的 _.pluck(array, index) pluck参数
+    // pluck重复调用 类似于取反
+    return _.unzip(arguments)
+  }
+
   /**
    * 需要注意的是 n == null || guard  ?  1 : n 执行顺序其实是 (n == null || guard) ? 1 : n
    * 而且是要删除的所以要用减的
@@ -990,6 +1009,8 @@
   }
 
   _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex)
+  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
+
 
   _.contains = _.include = _.includes = function (obj, item, fromIndex) {
     // 1 如果不是类数组的话 获取对象的values返回一个数组
@@ -1006,6 +1027,13 @@
     // 3 调用_.indexOf
     return _.indexOf(obj, item, fromIndex) >= 0
 
+  }
+
+  _.size = function (obj) {
+    if(obj == null) return 0
+
+    // 如果是类数组之际获取length 否则获取obj的键值对数组 然后取到length
+    return _.isArrayLike(obj) ? obj.length : _.keys(obj).length
   }
 
   _.uniq = _.unique = function (array, isSorted, iteratee, context) {
