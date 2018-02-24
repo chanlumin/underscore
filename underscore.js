@@ -1036,6 +1036,25 @@
     return _.isArrayLike(obj) ? obj.length : _.keys(obj).length
   }
 
+  /**
+   * 把可以跌倒的对象转化成数组
+   * @param obj
+   * @returns {*}
+   */
+  _.toArray = function (obj) {
+    if(!obj) return []
+    // 1 如果是数组 返回数组的副本
+    if(_.isArray(obj)) return slice.call(obj)
+
+    // 2 如果是类数组 map 转化成数组
+    if(_.isArrayLike(obj)) {
+      return _.map(obj, _.identity)
+    }
+
+    // 3 如果是对象的话 返回对象的属性值
+     return _.values(obj)
+  }
+
   _.uniq = _.unique = function (array, isSorted, iteratee, context) {
     // 1 如果isSorted没有传递进来的话 调整参数把isSorted置为false
     // 他的意思是第二个参数可以能传递的是iteratee回调函数 就往后调整到第三个参数
