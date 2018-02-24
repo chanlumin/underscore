@@ -14,7 +14,7 @@
   var
   slice = ArrayProto.slice,
   push = ArrayProto.push,
-  toString = ArrayProto.toString,
+  toString = ObjProto.toString,
   hasOwnProperty = ObjProto.hasOwnProperty
 
   var
@@ -692,6 +692,7 @@
       // function(stooge){ return stooge.age;}
       _.each(obj, function (value, index, obj) {
         computed = iteratee(value, index, obj)
+        // 3 如果没有比-Infinity小的 也要返回正确的-Infinity
         if(lastComputed < computed || computed == -Infinity && result == -Infinity) {
           // 备注 result 应该等于value 而不是经过计算的value
           result = value
@@ -699,6 +700,30 @@
         }
       })
     }
+    return result
+  }
+  
+  _.min = function (obj, iteratee, context) {
+    var result = Infinity, lastComputed = Infinity, computed, value
+    if(iteratee == null && obj != null) {
+      obj = _.isArrayLike(obj) ? obj : _.values(obj)
+      for(var i = 0, length = obj.length; i < length; i++) {
+        value = obj[i]
+        if(value < result) {
+          result = value
+        }
+      }
+    } else {
+      iteratee = cb(iteratee, context)
+      _.each(obj,function (value, index, list) {
+        computed = cb(value, index, list)
+        if(computed < lastComputed || computed ==- Infinity || result === Infinity) {
+          result = value
+          lastComputed = computed
+        }
+      })
+    }
+
     return result
   }
 
@@ -969,7 +994,49 @@
     // 3 调用_.indexOf
     return _.indexOf(obj, item, fromIndex) >= 0
 
+  }
 
+  _.uniq = _.unique = function (array, isSorted, iteratee, context) {
+    // 1 如果isSorted没有传递进来的话 调整参数把isSorted置为false
+    // 他的意思是第二个参数可以能传递的是iteratee回调函数 就往后调整到第三个参数
+    if(!_.isBoolean(isSorted)) {
+    // if(!isSorted) {
+      context = iteratee
+      iteratee = isSorted
+      isSorted = false
+    }
+
+    if(!iteratee)
+      iteratee = cb(iteratee, context) // 返回一个固定三个参数的函数
+
+    // 2 seen记录已经出现的(可能已经经过迭代) result记录结果集
+    // seen = [] 然后 seen = 1 此时seen就指向另外一个边量地址
+    var seen =[], result = []
+
+    // 3 遍历去重
+    for(var i = 0, length = getLength(array); i < length; i++) {
+      var value = array[i]
+      var computed = iteratee ? iteratee(value, i, array) : value
+
+      // 如果有isSorted的话 数组有序 只需要跟上一个出现过的元素进行对比就行了
+      // 其实有isSorted就美誉itetatee 因为这两个是互斥的
+      if(isSorted && !iteratee) {
+        if(!i || computed !== seen)  {
+          result.push(value)
+          seen = computed
+        }
+      } else if(iteratee) {
+        if(!_.contains(seen, computed)) {
+          seen.push(computed)
+          result.push(value)
+        }
+      } else {
+        if(!_.contains(result, value)) {
+          result.push(value)
+        }
+      }
+    }
+    return result
   }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
