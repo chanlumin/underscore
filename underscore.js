@@ -1247,6 +1247,27 @@
     return true
   }
 
+  /**
+   * 判断是list是否有一个元素满足predicate这个条件
+   * @type {any}
+   * _.some([null, 0, 'yes', false]);
+
+   */
+  _.some = _.any = function (obj, predicate, context) {
+    predicate = cb(predicate, context)
+    var keys = !_.isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length
+
+    for(var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index
+      // 1只要有一个元素满足条件的话 就返回true
+      if(predicate(obj[currentKey], currentKey, obj)) return true
+    }
+
+    // 2 全部都不满足的话就返回false
+    return false
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
