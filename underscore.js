@@ -1286,6 +1286,27 @@
     })
   }
 
+  /**
+   * 返回list中含有attrs或者硕士property元素的值
+   * var arr = [{name:2,age:3},{name:2,age:3,sex:'male'},{name:2}];
+   _.where(arr,{name:2,age:3});
+   * @param obj
+   * @param attrs
+   */
+  _.where = function (obj, attrs) {
+    // 过滤出一些包含attrs这些属性的元素 以数组形式返
+    return _.filter(obj, _.matcher(attrs))
+  }
+
+  /**
+   *  查找满足第一个元素的值
+   * @param obj
+   * @param attrs
+   */
+  _.findWhere = function (obj, attrs) {
+    return _.find(obj, _.matcher(attrs))
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
