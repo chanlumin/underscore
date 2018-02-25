@@ -1206,6 +1206,27 @@
 
   }
 
+  /**
+   * 返回第一个通过predicate函数的值
+   * var even = _.find([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+   * @type {detect}
+   */
+  _.find = _.detect = function (obj, predicate, context) {
+    var key
+    if(_.isArrayLike(obj)) {
+      console.log(obj)
+      key = _.findIndex(obj,predicate, context)
+    } else {
+      key = _.findKey(obj, predicate, context)
+    }
+
+    // 如果找到到话 就返回数组或者对象对应key的属性值
+    if(key !== void 0 && key != -1) {
+      console.log(obj[key])
+      return obj[key]
+    }
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
