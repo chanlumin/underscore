@@ -1268,6 +1268,24 @@
     return false
   }
 
+  /**
+   * 在obj这个list里面的各个元素调用method
+   * 如果method是字符串的话 那么调用元素的method
+   * 多余的args 都传递给method
+   * @param obj
+   * @param method
+   */
+  _.invoke = function (obj, method) {
+    var args = slice.call(arguments, 2)
+    var isFunc = _.isFunction(obj)
+
+    // 把map过后返回的数组返回回来
+    return _.map(obj, function (value) {
+      var func  = isFunc ? method : value[method]
+      return func == null ? func : func.apply(value, args)
+    })
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
