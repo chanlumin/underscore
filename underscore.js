@@ -1055,6 +1055,66 @@
      return _.values(obj)
   }
 
+
+
+  /**
+   * 实现分组的行为 分组的行为就是如果已经有了的话就push 否则用数组给对应的key值进行赋值
+   * @param behavior
+   */
+  var group = function (behavior) {
+    // 1 返回一个function(obj, iteratee, context)
+    return function (obj, iteratee, context) {
+      var result = {}
+      iteratee = cb(iteratee, cb)
+      _.each(obj,function (value, index) {
+        // 2 key就是GroupBy传递进来进行排序的依据
+        // iteratee杜宇indexBy来说,如果传入一个obj就能把value这个属性的值给取出来
+        var key = iteratee(value, index, obj)
+        // 3 排序的行为
+        behavior(result, value, key)
+      })
+      return result
+    }
+  }
+
+  _.groupBy = group(function (result, value, key) {
+    if(_.has(result, key)) {
+      result[key].push(value)
+    } else {
+      // 因为result的key对应的属性值都是数组 所以要这样进行赋值
+      result[key] = [value]
+    }
+
+  })
+
+  /**
+   * 返回每一项索引的对象
+   * var stooges = [{name: 'moe', age: 40}, {name: 'larry', age: 50}, {name: 'curly', age: 60}];
+   _.indexBy(stooges, 'age');
+
+   */
+  _.indexBy = group(function (result, value, key) {
+    result[key] = value
+  })
+
+
+  /**
+   * 返回各组中对象的数量的计数
+   * _.countBy([1, 2, 3, 4, 5], function(num) {
+      return num % 2 == 0 ? 'even': 'odd';
+    });
+
+   */
+  _.countBy = group(function (result, value, key) {
+    if(_.has(result, key)) {
+      result[key]++
+    } else {
+      // 只要有遍历 就有key 没有已经存在的话 就是初始化赋值等于1
+      result[key] = 1
+    }
+  })
+
+
   _.uniq = _.unique = function (array, isSorted, iteratee, context) {
     // 1 如果isSorted没有传递进来的话 调整参数把isSorted置为false
     // 他的意思是第二个参数可以能传递的是iteratee回调函数 就往后调整到第三个参数
