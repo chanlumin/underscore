@@ -1158,6 +1158,27 @@
     return result
   }
 
+  /**
+   * 查找对象中国属性满足iteratee这个函数的key
+   * @param obj
+   * @param iteratee
+   * @param context
+   * _.findKey({name :1,age :2},function(value){
+    return value == 2;
+    })
+   */
+  _.findKey = function (obj, predicate, context) {
+    predicate = cb(predicate)
+    var keys = _.keys(obj), key
+
+    for(var i = 0, length = keys.length; i < length; i++) {
+      key = keys[i]
+      if(predicate(obj[key], key, obj)) {
+        return key
+      }
+    }
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
