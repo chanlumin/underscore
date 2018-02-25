@@ -1227,6 +1227,27 @@
     }
   }
 
+  /**
+   * 判断list中的元素是否都满足同一个条件
+   * @type {all}
+   */
+  _.every = _.all = function (obj, predicate, context) {
+    predicate = cb(predicate, context)
+
+    // 1 如果是对象
+    var keys = !_.isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length,
+        currentKey
+
+    for(var index = 0; index < length; index++) {
+      currentKey = keys ? keys[index] : index
+      if(!predicate(obj[currentKey], currentKey, obj)) debugger;return false
+    }
+    // 符合全部条件的话 就返回true
+    return true
+  }
+
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
