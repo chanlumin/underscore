@@ -1179,6 +1179,33 @@
     }
   }
 
+  /**
+   * 它类似于map，但是这用于对象。转换每个属性的值。
+
+     _.mapObject({start: 5, end: 12}, function(val, key) {
+       return val + 5;
+     });
+   * @param obj
+   * @param iteratee
+   * @param context
+   * @returns {{}}
+   */
+  _.mapObject = function (obj,iteratee, context) {
+    iteratee = cb(iteratee,context)
+    var keys = _.keys(obj),
+        length = keys.length,
+        currentKey,
+        result = {}
+
+    for(var index = 0; index <  length; index++) {
+      //  从keys拿到currentKey
+      currentKey = keys[index]
+      result[currentKey] = iteratee(obj[currentKey], currentKey, obj)
+    }
+    return result
+
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
