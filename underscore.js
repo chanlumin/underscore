@@ -1307,6 +1307,27 @@
     return _.find(obj, _.matcher(attrs))
   }
 
+  /**
+   * 返回list随机的一个副本
+   * @param obj
+   */
+  _.shuffle = function (obj) {
+    var set = _.isArrayLike(obj) ? obj : _.values(obj),
+        length = obj.length
+
+    var shuffled = Array(length)
+
+    for(var index = 0; index < length; index++) {
+      var rand = _.random(0, index)
+      // 1 生成一个随机的下标 如果下标不同 才需要进行交换
+      if(rand !== index) shuffled[index] = shuffled[rand]
+      shuffled[rand] = set[index]
+    }
+
+    return shuffled
+
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
