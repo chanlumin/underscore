@@ -1373,6 +1373,29 @@
     }), 'value') // 把value萃取出来
   }
 
+  /**
+   * 拆分一个数组（array）为两个数组：  第一个数组其元素都满足predicate迭代函数， 而第二个的所有元素均不能满足predicate迭代函数。
+   * _.partition([0, 1, 2, 3, 4, 5], function(value, key, obj) {
+     return value % 2 == 1
+    });
+   * @param obj
+   * @param predicate
+   * @param context
+   */
+  _.partition = function (obj, predicate, context) {
+    predicate = cb(predicate, context)
+    var pass = [], fail = []
+    _.each(obj, function (value, key, obj) {
+      (predicate(value, key, obj) ? pass : fail).push(value)
+      // if(iteratee(value, key, obj)) {
+      //   pass.push(value)
+      // } else {
+      //   fail.push(value)
+      // }
+    })
+    return [pass, fail]
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
