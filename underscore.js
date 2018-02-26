@@ -49,12 +49,9 @@
   _.noop = function () {}
   
   _.random = function (min, max) {
-    // 处理整数
-    min = Math.floor(min)
-    max = Math.floor(max)
 
     // 处理只有一个参数的问题
-    if(max === null) {
+    if(max == null) {
       max = min
       min = 0
     } else if(min > max) { // 处理min和max传递相反的问题
@@ -1326,6 +1323,54 @@
 
     return shuffled
 
+  }
+
+  /**
+   * 从list中返回一个随机样本 如果没有传入n返回一个随机数
+   * @param obj
+   * @param n
+   * @param gurad
+   * @returns {*}
+   *
+   *
+   _.sample([1, 2, 3, 4, 5, 6]);
+   => 4
+   _.sample([1, 2, 3, 4, 5, 6], 3);
+   => [1, 6, 2]
+   */
+  _.sample = function (obj, n, gurad) {
+    if(n == null || gurad) {
+      console.log('1')
+      !_.isArrayLike(obj) && (obj = _.values(obj))
+      console.log(obj.length, obj, _.random(obj.length - 1))
+      return obj[_.random(obj.length - 1)]
+    }
+
+    return _.shuffle(obj).slice(0, Math.max(0, n))
+  }
+  
+  _.sortBy = function (obj, iteratee, context) {
+
+    // 先整出一个数据结构 按照这个数据结构的criteria或者index排序 把value这个值提取出来就有序了
+    iteratee = cb(iteratee, context)
+    return _.pluck(_.map(obj, function (value, index, obj) {
+      return {
+        value : value,
+        index : index,
+        criteria: iteratee(value, index, obj)
+      }
+    }).sort(function (left, right) {
+      var a = left.criteria,
+          b = right.criteria
+
+      // 不想等的时候比 特别需要注意的是 a === void这个判断
+      if(a !== b) {
+        if(a < b || a === void 0) return -1
+        if(a > b || b === void 0) return 1
+      }
+      // 相等的时候比index
+      return left.index - right.index
+    }), 'value') // 把value萃取出来
   }
 
 
