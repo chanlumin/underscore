@@ -1395,6 +1395,58 @@
     })
     return [pass, fail]
   }
+  var executeBound = function (sourceFunc, boundFunc, context, callingContext, args) {
+
+    if(!(callingContext instanceof boundFunc)) {
+      // 直接调用函数绑定
+      sourceFunc.apply(context, args)
+    }
+
+
+    // 否则 模拟new 生成函数 此时生成的函数只是继承了原型而已
+    var self = _.baseCreate(sourceFunc.prototype)
+    var result = sourceFunc.apply(self, args)
+
+    // ???
+    if(_.isObject(result)) return result
+
+    return self
+
+  }
+
+  /**
+   *
+   var func = function(greeting){ return greeting + ': ' + this.name };
+   func = _.bind(func, {name: 'moe'}, 'hi');
+   func();
+   => 'hi: moe'
+
+   此处的函数其实要传入的是三个参数 第一个就是函数 第二个就是函数要绑定的对象 第三个参数是变量
+   * 功能:.bind(function, object, *arguments)
+   * 绑定函数到object中去 无论怎么调用函数的this都指向这个对象去
+   * @param func
+   * @param context
+   */
+  _.bind = function (func, context) {
+
+    // Function.prototype.bind.apply(func,context)
+    if(nativeBind && func.bind === nativeBind) {
+
+      // 返回由this值和初始化参数改造的 原拷贝函数 也就返回原生的bind他直接bind到func中
+      // apply接受的是一个包含多个参数的数组
+      // 这句话的意思在func这个函数使用bind => func.bind(context, restArgs)  =》 函数的this就可以指向object中去了
+      return nativeBind.apply(func, slice.call(arguments, 1))
+    }
+
+    if(!_.isFunction(func)) {
+      throw  new TypeError('bind must be on a function')
+    }
+    
+    var bound = function () {
+     return executeBound(func, bound, context, this, slice.call(arguments))
+    }
+    return bound
+  }
 
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字

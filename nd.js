@@ -1361,7 +1361,8 @@
       // 如果是用 new 调用 _.bind 返回的方法
   
       // self 为 sourceFunc 的实例，继承了它的原型链
-      // self 理论上是一个空对象（还没赋值），但是有原型链
+      // self 理论上是一个空对象（还没赋值），但是有原型链、
+
       var self = baseCreate(sourceFunc.prototype);
   
       // 用 new 生成一个构造函数的实例
