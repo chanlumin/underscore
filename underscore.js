@@ -1448,6 +1448,44 @@
     return bound
   }
 
+  /**
+   * 其实这个函数就是为了提前传入一些默认的参数 局部填充默认的一些参数
+   * var subtract = function(a, b) { return b - a; };
+     sub5 = _.partial(subtract, 5);
+     sub5(20);
+
+     subFrom20 = _.partial(subtract, _, 20);
+     subFrom20(5);
+     => 15
+
+
+   * @param func
+   * @returns {bound}
+   */
+  _.partial = function (func) {
+    var boundArgs = slice.call(arguments, 1)
+
+    var bound = function() {
+      var length = boundArgs.length,
+        // 用来记录boundArgs提取的位置
+          position = 0,
+          args = Array(length)
+      for(var i = 0; i < length; i++) {
+        // 如果有占位符号的话 先从闭包函数的arguments去取
+        args[i] = boundArgs[i] === '_' ? arguments[position++] : boundArgs[i]
+      }
+      while (position < arguments.length) {
+        args.push(arguments[position++])
+      }
+
+      return executeBound(func, bound, this, this, args)
+
+    }
+
+    return bound
+
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
