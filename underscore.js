@@ -1486,6 +1486,49 @@
 
   }
 
+  _.bindAll = function (func) {
+    var length = arguments.length
+    if(length <= 1) {
+      throw new Error("bindAll must be pass function names")
+    }
+
+    for(var i = 1; i < length; i++) {
+      var key = arguments[i]
+      obj[key] = _.bind(obj[key], obj)
+    }
+
+    return obj
+  }
+
+  /**
+   * var fibonacci = _.memoize(function(n) {
+        return n < 2 ? n: fibonacci(n - 1) + fibonacci(n - 2);
+      });
+     fibonacci(11);
+
+   实际上上面的 里面是斐波那契名称 作为memoize返回的函数 帮他重新命名为fibonacci 这个名字
+   就可以形成递归,只需要在里面判断一下中间量是否有存在，存在直接返回不需要进行计算
+   * @param func
+   * @param hasher
+   * @returns {memoize}
+   */
+  _.memoize = function (func, hasher) {
+
+    var memoize = function(key) {
+
+      // 如果有hasher函数的话 调用这个haser函数同时传入 arguments也就是key
+      var address = '' + hasher ? hasher.apply(this, arguments) : key
+      if(!_.has(cache, address)) {
+        cache[address] = func.apply(this, arguments)
+      }
+      return cache[address]
+    }
+
+    memoize.cache = {}
+
+    return memoize
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
