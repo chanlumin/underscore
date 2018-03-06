@@ -1550,6 +1550,18 @@
 
   }
 
+  /**
+   *
+   * 延迟调用function直到当前调用栈清空为止，类似使用延时为0的setTimeout方法。
+   * 对于执行开销大的计算和无阻塞UI线程的HTML渲染时候非常有用。 如果传递arguments参数，
+   * 当函数function执行时， arguments 会作为参数传入。
+
+   *  其中 delay 至少需要两个参数一个是func 一个是wait也就是延迟时间
+   *
+   * @type {bound}
+   */
+  _.defer = _.partial(_.delay, _, 1)
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
