@@ -1529,6 +1529,27 @@
     return memoize
   }
 
+  /**
+
+     var log = _.bind(console.log, console);
+     _.delay(log, 1000, 'logged later');
+
+   *
+   *
+   * 延迟wait秒后执行func, 如果第三个参数就作为func的参数被传递进行
+   * @param func
+   * @param wait
+   */
+  _.delay = function (func, wait) {
+    var args = slice.call(arguments, 2)
+
+    return setTimeout(function () {
+      // 不需要绑定上下文 只需要把参数传递进去就好了
+      return func.apply(null, args)
+    }, wait)
+
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
