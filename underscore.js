@@ -1695,6 +1695,22 @@
 
   }
 
+  /**
+   * 函数只有调用了count次 才会执行
+   *
+   *
+   var hello = function() {console.log("hello")}
+   var af = _.after(2, hello)
+   */
+  _.after = function(times, func) {
+    return function () {
+      // 每一次调用都是空调用
+      if (--times < 1) {
+        func.apply(this, arguments)
+      }
+    }
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
