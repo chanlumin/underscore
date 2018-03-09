@@ -1734,6 +1734,12 @@
     }
 
   }
+  /**
+   * 创建一个只能调用一次的函数
+   */
+  _.once = function () {
+    return _.partial(_.before, 2)
+  }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
