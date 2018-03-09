@@ -1665,6 +1665,35 @@
     return _.partial(wrapper, func)
   }
 
+  /**
+   * 将参数传递给最后面的函数, 计算的结果再次作为参数传递到前面的函数, 依次类推
+   * @returns {Function}
+   *
+   *
+   * var greet = function(name){ return "hi: " + name; };
+     var exclaim = function(statement){ return statement.toUpperCase() + "!"; };
+     var welcome = _.compose(greet, exclaim);
+     welcome('moe');
+   */
+  
+  _.compoase = function () {
+    var args = arguments,
+        start = arguments.length - 1
+
+    return function () {
+      i = start
+      var result = args[start].apply(this, arguments)
+
+      while (i--) {
+        // i先剪掉1再进来
+        result = args[i].apply(this, result)
+      }
+      return result
+    }
+
+
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
