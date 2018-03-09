@@ -1629,9 +1629,7 @@
             contxt = args = null
           }
         }
-
         // result = func.apply(contxt, args); contxt = args = null 上面那一段其实可以直接优化出
-
       }
     }
 
@@ -1656,6 +1654,15 @@
       }
 
     }
+  }
+
+  /**
+   * 将函数的传递给wrapper 并且作为wrapper的第一个参数
+   * @param func
+   * @param wrapper
+   */
+  _.wrap = function (func, wrapper) {
+    return _.partial(wrapper, func)
   }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
