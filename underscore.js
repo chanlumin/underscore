@@ -1676,7 +1676,7 @@
      welcome('moe');
    */
   
-  _.compoase = function () {
+  _.compose = function () {
     var args = arguments,
         start = arguments.length - 1
 
@@ -1686,7 +1686,8 @@
 
       while (i--) {
         // i先剪掉1再进来
-        result = args[i].apply(this, result)
+        // 这边的apply 变成call就可以
+        result = args[i].call(this, result)
       }
       return result
     }
