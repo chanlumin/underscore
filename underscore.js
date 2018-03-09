@@ -1609,6 +1609,54 @@
 
   }
 
+  _.debounce = function (func,  wait, immediate) {
+    var args, context, timestamp, callNow, timeout, last
+
+    var later = function() {
+      // 获取最后一次执行需要的时间间隔
+      last = _.now() - timestamp
+
+      // setTimeout 的不准确性 所以需要判断 如果 last剩余的时间 仍然于小于wait的话
+      if(last < wait && last > 0) {
+        timeout = setTimeout(later, wait-last)
+      } else {
+        // 要执行函数了 所以  timeout要置为空
+        timeout = null
+        // 如果不是立即执行才需要
+        if(!immediate) {
+          result = func.apply(contxt, args)
+          if(!timeout) {
+            contxt = args = null
+          }
+        }
+
+        // result = func.apply(contxt, args); contxt = args = null 上面那一段其实可以直接优化出
+
+      }
+    }
+
+
+    return function() {
+      context = this
+      args = arguments
+      // 1 执行函数的时候先设定时间戳
+      timestamp = _.now()
+
+      // 2 判断immediate参数 是否设置为立即触发
+      callNow = immediate && !timeout
+
+      if(callNow) {
+        timeout = null
+        func.apply(context, args)
+      }
+
+      if(!timeout)  {
+        timeout = setTimeout(later, wait)
+        context = args = null
+      }
+
+    }
+  }
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
