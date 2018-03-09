@@ -1562,6 +1562,53 @@
    */
   _.defer = _.partial(_.delay, _, 1)
 
+  _.throttle = function(func, wait, options) {
+    var context, args, result,timeout,
+      previous = 0
+
+    // 如果options == null
+    if(options == null) options = {}
+
+    // 只是
+    var later = function() {
+      // 之所以等于false就等于0是因为 下面的判断有 !options && options.leading === false ？ previous = _.now() ： ''
+      // 此处也是刷新要执行函数时的这个阶段
+      // 要执行函数了 所以timeout 要置为空
+      timeout = null
+      previous = options.leading === false ? 0 : _.now()
+      result = func.apply(context, args)
+
+      if(!timeout) context = args = null
+    }
+    
+    return function () {
+      // 计算剩下的时间是 wait - (now - previous)
+      var now = _.now()
+      previous = !previous && options.leading === false && _.now()
+      var remaining = wait - (now - previous)
+
+      // remaining 表示第二次的函数还没执行 第三次发送过去  此时会刷新previous underscore不阻止函数的执行 返回最新的一次执行结果
+      if(remaining <  0 || remaining > wait) {
+        // 执行函数 之前要判断一下timeout是否存在
+        if(timeout) {
+          // 先用clearTimeout清理定时器
+          clearTimeout(timeout)
+          timeout = null
+        }
+
+        // 每次要执行函数之前都要刷新当前的执行时间也就是previous
+        previous = _.now()
+        result = func.apply(context, args)
+        if(!timeout) context = args = null
+
+      } else if(!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining)
+      }
+      return result
+    }
+
+  }
+
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {

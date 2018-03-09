@@ -1559,6 +1559,7 @@
     // ----------------------------------------- //
     _.throttle = function(func, wait, options) {
       var context, args, result;
+
   
       // setTimeout 的 handler
       var timeout = null;
