@@ -1711,6 +1711,30 @@
     }
   }
 
+  /**
+   * 调用不超过times次 比如times传入的是2 最多不超过2次也就是执行一次
+   * 把最后一次返回的结果返回
+   * @param times
+   * @param func
+   */
+  _.before = function (times, func) {
+    // 闭包变量可以持久性
+    var memo
+
+    return function() {
+      if(--times > 0) {
+        memo = func.apply(this,arguments)
+      }
+
+      if(times <= 1) {
+        func = null
+      }
+
+      return memo
+    }
+
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
