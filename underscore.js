@@ -1741,6 +1741,22 @@
     return _.partial(_.before, 2)
   }
 
+  /**
+   *  调用给定的函数n次, 每一次调用iteratee传递index参数 返回给数组
+   */
+
+  _.times = function(n, iteratee, context) {
+    var accum =  Array(Math.max(0, n))
+
+    iteratee = optimizeCb(iteratee, context, 1)
+
+    for(var i = 0; i < n; i++) {
+      accum[i] = iteratee(i)
+    }
+
+    return accum
+  }
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
