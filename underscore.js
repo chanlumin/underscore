@@ -1760,6 +1760,15 @@
   /**
    * 转译HTML字符
    * @param map
+   *
+   *
+   * '&<"&"<'.replace(/&|<|"/g,function(value){
+        if(value == '&') return '&amp;'
+        if(value == '<') return '&lt;'
+        if(value == '"') return '&quot;'
+      })
+
+    其中(?:) 表示不补获
    */
    var escapeMap = {
     '&': '&amp;',
@@ -1791,6 +1800,10 @@
 
 
   _.escape = createEscape(escapeMap)
+
+  var unescapeMap = _.invert(escapeMap)
+
+  _.unescape = createEscape(unescapeMap)
 
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
