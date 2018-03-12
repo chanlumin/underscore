@@ -1801,10 +1801,37 @@
 
   _.escape = createEscape(escapeMap)
 
+  /**
+   * invert 反转对象的键值对
+   */
   var unescapeMap = _.invert(escapeMap)
 
   _.unescape = createEscape(unescapeMap)
 
+
+  /**
+   * 如果提供的property是函数那么就在object上下文调用这个函数, 对返回property对应的value值, 如果为空就返回defaultValue
+   * 也就是fallback
+   * @param object
+   * @param property
+   * @param fallback
+   *
+   *
+   * var object = {cheese: 'crumpets', stuff: function(){ return 'nonsense'; }};
+     _.result(object, 'cheese');
+   => "crumpets"
+     _.result(object, 'stuff');
+   => "nonsense"
+   */
+  _.result = function(object, property, fallback) {
+    // 1 获取值 object有 才有可能取到value
+    var value = object == null ? void 0 : object[property]
+
+    if(value === void 0) return fallback
+
+    // 如果是一个函数就调用他 否则就直接返回value
+    return _.isFunction(value) ? value.call(value) : value
+  }
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
