@@ -1757,6 +1757,41 @@
     return accum
   }
 
+  /**
+   * 转译HTML字符
+   * @param map
+   */
+   var escapeMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    '`': '&#x60;'
+  }
+
+  var createEscape = function (map) {
+    var escaper = function (match) {
+      return map[match]
+    }
+
+    // 正则替换
+    var source = '(?:' + _.keys(map).join('|') + ')' // 要替换的源码
+    var terstReg = RegExp(source)
+    var replaceReg = RegExp(source, 'g')
+
+
+    return function (string) {
+      string = string == null ? '' :  '' + string
+      // 如果有需要替换的那么就replace 否则返回原来的String
+      return terstReg.test(string) ? string.replace(replaceReg, escaper) : string
+    }
+
+  }
+
+
+  _.escape = createEscape(escapeMap)
+
   // 处理全局变量的冲突 可能 root._ 已经被占用了=> 给underscore重新起名字
   _.noConflict = function () {
     root._ = previousUnderscore
